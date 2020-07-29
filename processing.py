@@ -2,6 +2,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from collections import Counter
 
 
 def convert_to_tokens(text) -> [str]:
