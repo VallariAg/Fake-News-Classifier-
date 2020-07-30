@@ -6,7 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
-import pickle
+# import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
@@ -16,6 +16,11 @@ from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from processing import *
 
 
+def get_vocab(file):
+    with open(file) as f:
+        vocab = f.readlines()
+    return [x.strip() for x in vocab]
+
 
 if __name__ == "__main__":
     df = pd.read_csv('final_news_dataset.csv', usecols=[
@@ -24,6 +29,10 @@ if __name__ == "__main__":
     df['text'] = df['title'] + df['content']
     X = df['text']
     y = df['label']
+
+    # vocabulary
+    vocab = get_vocab('vocabulary')
+    print("vocab imported", vocab[:10])
 
     # Splitting the data into train
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
@@ -35,13 +44,17 @@ if __name__ == "__main__":
     avg_cf = VotingClassifier(
         estimators=[('lr', lr_cf), ('svm', svm_cf), ('mnb', mnb_cf)], voting='hard')
 
+    X_train = convert_to_tokens(X_train)
+
     vectorizer = TfidfVectorizer(
-        use_idf=True, max_df=200, tokenizer=convert_to_tokens)
+        use_idf=True, max_df=200, preprocessor=convert_to_tokens, vocabulary=vocab)
+    print("initalized vectorizer")
 
     vectorizer.fit_transform(df['text'])
+    print("fit_transfomed-ed vectorizer")
+
     pipeline = Pipeline([('preprocessing', InputTransformer(vectorizer)),
                          ('average_model', avg_cf)])
-
     pipeline.fit(X_train, y_train)
 
     y_pred = pipeline.predict(X_test)

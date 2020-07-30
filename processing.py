@@ -3,6 +3,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
+import pandas as pd
 
 
 def convert_to_tokens(text) -> [str]:
@@ -14,6 +15,7 @@ def convert_to_tokens(text) -> [str]:
     stop = stopwords.words('english')
     lemmatized_words = []
     for word in words:
+        word = word.lower()
         if word not in stop and word.isalpha() and len(word) > 2:
             lemmatized_words.append(WordNetLemmatizer().lemmatize(word))
     return lemmatized_words
@@ -21,8 +23,8 @@ def convert_to_tokens(text) -> [str]:
 
 def make_vocab(text, freq_limit: int) -> {}:
     c = Counter(convert_to_tokens(text))
-    all_tokens = [word for word, count in c.items() if count > freq_limit]
-    return all_tokens
+    vocab = [word for word, count in c.items() if count > freq_limit]
+    return vocab
 
 
 class InputTransformer(BaseEstimator, TransformerMixin):
@@ -37,14 +39,22 @@ class InputTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         X_ = X.copy()
         print('trasform')
-        # vocabulary = vocab[field]
         transformedX = self.vectorizer.transform(X_)
         return transformedX
 
 
-# title_limit = 10
-# content_limit = 200
-# vocab_title = make_vocab(df.title, title_limit)
-# vocab_content = make_vocab(df.content, content_limit)
-# df['all_text'] = df.title + df.content
-# vocab_all = set(vocab_title + vocab_content)
+if __name__ == '__main__':
+    TITLE_LIMIT = 10
+    CONTENT_LIMIT = 200
+    df = pd.read_csv('final_news_dataset.csv', usecols=[
+                     'title', 'content', 'label'], encoding='latin1')
+    df.dropna(inplace=True)
+    df['text'] = df['title'] + df['content']
+
+    print("making vocab...")
+    vocab = set(make_vocab(df['title'], TITLE_LIMIT) +
+                make_vocab(df['content'], CONTENT_LIMIT))
+
+    print("dumping into file...")
+    with open('vocabulary', 'w+') as f:
+        f.write("\n".join(vocab))
