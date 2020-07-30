@@ -32,11 +32,12 @@ if __name__ == "__main__":
 
     # vocabulary
     vocab = get_vocab('vocabulary')
-    print("vocab imported", vocab[:10])
+    print("vocab imported")
 
     # Splitting the data into train
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+    # ML Models
     svm_cf = svm.SVC(kernel='rbf')
     lr_cf = LogisticRegression(
         solver='sag', random_state=0, C=5, max_iter=1000)
@@ -44,10 +45,10 @@ if __name__ == "__main__":
     avg_cf = VotingClassifier(
         estimators=[('lr', lr_cf), ('svm', svm_cf), ('mnb', mnb_cf)], voting='hard')
 
-    X_train = convert_to_tokens(X_train)
+    # X_train = convert_to_tokens(X_train)
 
     vectorizer = TfidfVectorizer(
-        use_idf=True, max_df=200, preprocessor=convert_to_tokens, vocabulary=vocab)
+        use_idf=True, max_df=200, tokenizer=convert_to_tokens, vocabulary=vocab)
     print("initalized vectorizer")
 
     vectorizer.fit_transform(df['text'])
@@ -55,7 +56,9 @@ if __name__ == "__main__":
 
     pipeline = Pipeline([('preprocessing', InputTransformer(vectorizer)),
                          ('average_model', avg_cf)])
+
     pipeline.fit(X_train, y_train)
+    print("pipeline fit-ed")
 
     y_pred = pipeline.predict(X_test)
     accuracy = metrics.accuracy_score(y_test, y_pred)

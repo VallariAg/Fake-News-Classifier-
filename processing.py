@@ -7,7 +7,6 @@ import pandas as pd
 
 
 def convert_to_tokens(text) -> [str]:
-
     try:
         words = nltk.word_tokenize(" ".join(text.tolist()))
     except:
@@ -44,6 +43,9 @@ class InputTransformer(BaseEstimator, TransformerMixin):
 
 
 if __name__ == '__main__':
+    '''
+    Make vocabulary with make_vocab() and store it in `vocabulary` text file
+    '''
     TITLE_LIMIT = 10
     CONTENT_LIMIT = 200
     df = pd.read_csv('final_news_dataset.csv', usecols=[
