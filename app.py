@@ -37,7 +37,7 @@ def predict():
     pred = pipeline.predict(news)
     print(pred)
 
-    response = make_response(jsonify({"response": pred[0]}))
+    response = make_response(jsonify({"result": pred[0]}))
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
