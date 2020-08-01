@@ -5,4 +5,4 @@ sklearn
 pandas
 flask
 nltk
-# gunicorn
+gunicorn
