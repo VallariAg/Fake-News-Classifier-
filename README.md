@@ -1,5 +1,5 @@
 # Fake-News-Classifier-
-A website to classify fake/real news by a ML model.  
+An API to classify fake/real news by a ML model.  
 
 ## Prerequisites
 
@@ -32,11 +32,16 @@ Download dataset from [here](https://drive.google.com/file/d/1eVYHo4sowg0NBiX8aJ
     python3 fake_news_detection.py 
     ```
     This would create a serialized version of our model into a file model.pkl
-4. To test the project on locally hosted URL http://127.0.0.1:5000/ run:
+4. To test the API on locally hosted URL http://127.0.0.1:5000/ run:
     ```
     python3 app.py
     ```
+## Use
 
+Send POST requests at '/predict' to get a JSON response of:
+```
+{"result": "fake"} or {"result": "real"}
+```
 ## Authors
 
 - [Tania Malhotra](github.com/TaniaMalhotra)
